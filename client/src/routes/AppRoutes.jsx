@@ -4,11 +4,9 @@ import { useAuth } from '../context/AuthContext';
 // Layouts
 import MainLayout from '../layouts/MainLayout';
 import AdminLayout from '../layouts/AdminLayout';
-import AuthLayout from '../layouts/AuthLayout';
-
-// Pages - Auth
-import Login from '../pages/auth/Login';
-import Register from '../pages/auth/Register';
+// Auth pages are now handled directly on the Landing page
+// import Login from '../pages/auth/Login';
+// import Register from '../pages/auth/Register';
 
 // Pages - Public
 import Landing from '../pages/Landing';
@@ -34,7 +32,7 @@ const ProtectedRoute = ({ children, allowedRoles }) => {
   if (loading) return <div className="flex h-screen items-center justify-center">Loading...</div>;
 
   if (!user) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/" replace />;
   }
 
   if (allowedRoles && !allowedRoles.includes(user.role)) {
@@ -51,11 +49,7 @@ export default function AppRoutes() {
       <Route path="/" element={<Landing />} />
       <Route path="/public-dashboard" element={<MainLayout><PublicDashboard /></MainLayout>} />
       
-      {/* Auth Routes */}
-      <Route element={<AuthLayout />}>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-      </Route>
+      {/* Auth Routes removed as they are part of Landing page now */}
 
       {/* Citizen Protected Routes */}
       <Route element={<ProtectedRoute allowedRoles={['citizen', 'admin']}><MainLayout /></ProtectedRoute>}>
