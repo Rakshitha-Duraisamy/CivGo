@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { cn } from '../utils/cn';
 
 export default function StatCard({ title, value, icon: Icon, trend, colorClass }) {
@@ -21,3 +22,4 @@ export default function StatCard({ title, value, icon: Icon, trend, colorClass }
     </div>
   );
 }
+

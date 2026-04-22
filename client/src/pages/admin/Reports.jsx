@@ -1,10 +1,9 @@
 import { useState } from 'react';
 import { Download, FileText, FileSpreadsheet, Calendar, Loader2 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 
 export default function Reports() {
@@ -29,7 +28,8 @@ export default function Reports() {
         return inDateRange && matchesCategory;
       });
       return filtered;
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error('Failed to fetch data for export');
       return null;
     }
@@ -60,7 +60,7 @@ export default function Reports() {
         tableRows.push(rowData);
       });
 
-      doc.autoTable({
+      autoTable(doc, {
         head: [tableColumn],
         body: tableRows,
         startY: 28,
@@ -108,11 +108,7 @@ export default function Reports() {
 
       <div className="grid md:grid-cols-2 gap-6">
         {/* Export Section */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6"
-        >
+        <div className="glass-card p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Export Data</h2>
           <div className="space-y-4">
             <div>
@@ -179,15 +175,10 @@ export default function Reports() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Saved Reports / Templates */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card p-6"
-        >
+        <div className="glass-card p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Scheduled Reports</h2>
           <div className="space-y-3">
             {[
@@ -208,7 +199,7 @@ export default function Reports() {
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       </div>
     </div>
   );

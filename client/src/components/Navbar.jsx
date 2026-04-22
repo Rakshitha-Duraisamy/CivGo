@@ -13,6 +13,16 @@ export default function Navbar() {
   const [notifications, setNotifications] = useState([]);
   const [showNotifications, setShowNotifications] = useState(false);
 
+  const fetchNotifications = async () => {
+    try {
+      const { data } = await api.get('/notifications');
+      setNotifications(data.notifications);
+    } catch (err) {
+      console.error(err);
+      console.error('Failed to fetch notifications');
+    }
+  };
+
   useEffect(() => {
     if (user) {
       fetchNotifications();
@@ -27,20 +37,12 @@ export default function Navbar() {
     }
   }, [user]);
 
-  const fetchNotifications = async () => {
-    try {
-      const { data } = await api.get('/notifications');
-      setNotifications(data.notifications);
-    } catch (error) {
-      console.error('Failed to fetch notifications');
-    }
-  };
-
   const markAsRead = async (id) => {
     try {
       await api.put(`/notifications/${id}/read`);
       setNotifications(notifications.map(n => n._id === id ? { ...n, read: true } : n));
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       console.error('Failed to mark read');
     }
   };

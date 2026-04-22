@@ -11,6 +11,9 @@ const complaintRoutes = require('./routes/complaintRoutes');
 const adminRoutes = require('./routes/adminRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 
+// Init background jobs
+require('./jobs/escalationJob');
+
 const app = express();
 const httpServer = createServer(app);
 

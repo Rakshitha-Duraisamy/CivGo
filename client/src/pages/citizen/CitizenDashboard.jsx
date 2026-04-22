@@ -19,7 +19,8 @@ export default function CitizenDashboard() {
         } else if (Array.isArray(data)) {
           setComplaints(data);
         }
-      } catch (error) {
+      } catch (err) {
+        console.error(err);
         toast.error('Failed to load dashboard data');
       } finally {
         setLoading(false);

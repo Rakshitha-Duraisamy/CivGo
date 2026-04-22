@@ -44,12 +44,35 @@ const complaintSchema = new mongoose.Schema({
     type: String
   },
   location: {
-    type: String
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point'
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0]
+    },
+    address: String
+  },
+  beforeImage: String,
+  afterImage: String,
+  upvotes: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
+  escalationLevel: {
+    type: Number,
+    default: 0
   },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     required: true
+  },
+  assignedTo: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
   },
   rating: {
     type: Number,
@@ -59,6 +82,8 @@ const complaintSchema = new mongoose.Schema({
   feedback: String,
   timeline: [timelineSchema]
 }, { timestamps: true });
+
+complaintSchema.index({ location: '2dsphere' });
 
 // Pre-save hook to generate trackingId
 complaintSchema.pre('save', function() {

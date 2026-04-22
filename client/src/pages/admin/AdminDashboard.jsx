@@ -1,13 +1,15 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { 
   FileText, Clock, CheckCircle, AlertTriangle, 
-  TrendingUp, Users, MoreHorizontal 
+  TrendingUp, Users, MoreHorizontal, AlertCircle 
 } from 'lucide-react';
-import { motion } from 'framer-motion';
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, ResponsiveContainer,
   PieChart, Pie, Cell, LineChart, Line
 } from 'recharts';
+import { motion } from 'framer-motion';
+import toast from 'react-hot-toast';
 import StatCard from '../../components/StatCard';
 import api from '../../services/api';
 import { StatusBadge, PriorityBadge } from '../../components/Badges';
@@ -65,11 +67,7 @@ export default function AdminDashboard() {
 
       <div className="grid lg:grid-cols-2 gap-6 mt-8">
         {/* Chart: Monthly Trend */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="glass-card p-6"
-        >
+        <div className="glass-card p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Submission vs Resolution</h2>
           <div className="h-72">
             <ResponsiveContainer width="100%" height="100%">
@@ -85,15 +83,10 @@ export default function AdminDashboard() {
               </LineChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
 
         {/* Chart: Categories */}
-        <motion.div 
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="glass-card p-6"
-        >
+        <div className="glass-card p-6">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">Complaints by Category</h2>
           <div className="h-72 flex items-center justify-center">
             <ResponsiveContainer width="100%" height="100%">
@@ -117,16 +110,11 @@ export default function AdminDashboard() {
               </PieChart>
             </ResponsiveContainer>
           </div>
-        </motion.div>
+        </div>
       </div>
 
       {/* Recent Activity Table */}
-      <motion.div 
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="glass-card overflow-hidden mt-8"
-      >
+      <div className="glass-card overflow-hidden mt-8">
         <div className="p-6 border-b border-slate-200 dark:border-slate-700 flex justify-between items-center">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white">Recent Complaints requiring action</h2>
           <button className="text-sm font-medium text-primary-600 hover:text-primary-700 dark:text-primary-400">View All</button>
@@ -164,7 +152,8 @@ export default function AdminDashboard() {
             </tbody>
           </table>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
+

@@ -1,8 +1,31 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Upload, MapPin, CheckCircle, AlertCircle } from 'lucide-react';
+import { MapContainer, TileLayer, Marker, useMapEvents } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
+import L from 'leaflet';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
+
+// Fix leaflet default icon
+delete L.Icon.Default.prototype._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconRetinaUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon-2x.png',
+  iconUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png',
+  shadowUrl: 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png',
+});
+
+function LocationMarker({ position, setPosition }) {
+  useMapEvents({
+    click(e) {
+      setPosition([e.latlng.lat, e.latlng.lng]);
+    },
+  });
+
+  return position === null ? null : (
+    <Marker position={position}></Marker>
+  );
+}
 
 export default function SubmitComplaint() {
   const [loading, setLoading] = useState(false);
@@ -13,7 +36,27 @@ export default function SubmitComplaint() {
   const [priority, setPriority] = useState('Medium');
   const [description, setDescription] = useState('');
   const [location, setLocation] = useState('');
+  const [position, setPosition] = useState(null); // [lat, lng]
   const [image, setImage] = useState(null);
+
+  const handleAutoDetect = () => {
+    if (!navigator.geolocation) {
+      toast.error('Geolocation is not supported by your browser');
+      return;
+    }
+    toast.loading('Detecting location...', { id: 'geo' });
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setPosition([pos.coords.latitude, pos.coords.longitude]);
+        setLocation(`Lat: ${pos.coords.latitude.toFixed(4)}, Lng: ${pos.coords.longitude.toFixed(4)}`);
+        toast.success('Location detected', { id: 'geo' });
+      },
+      (err) => {
+        console.error(err);
+        toast.error('Failed to get location', { id: 'geo' });
+      }
+    );
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -26,6 +69,12 @@ export default function SubmitComplaint() {
       formData.append('priority', priority);
       formData.append('description', description);
       formData.append('location', location);
+      
+      if (position) {
+        // [lng, lat] for GeoJSON
+        formData.append('locationCoords', JSON.stringify([position[1], position[0]]));
+      }
+
       if (image) {
         formData.append('image', image);
       }
@@ -35,9 +84,13 @@ export default function SubmitComplaint() {
       });
 
       toast.success('Complaint submitted successfully!');
-      navigate('/history');
+      navigate('/citizen/dashboard'); // Fix navigation target
     } catch (error) {
-      toast.error(error.response?.data?.message || 'Failed to submit complaint');
+      if (error.response?.status === 409) {
+         toast.error(error.response.data.message);
+      } else {
+         toast.error(error.response?.data?.message || 'Failed to submit complaint');
+      }
     } finally {
       setLoading(false);
     }
@@ -94,16 +147,24 @@ export default function SubmitComplaint() {
               <MapPin className="h-5 w-5 text-blue-500" /> Location Details
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="md:col-span-2">
+            <div className="grid grid-cols-1 gap-4">
+              <div>
                 <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Street Address <span className="text-red-500">*</span></label>
                 <div className="flex gap-2">
                   <input type="text" required value={location} onChange={(e) => setLocation(e.target.value)} className="input-field" placeholder="Full address" />
-                  <button type="button" onClick={() => setLocation('123 Auto Detected Street, City')} className="btn-secondary whitespace-nowrap flex items-center gap-2">
+                  <button type="button" onClick={handleAutoDetect} className="btn-secondary whitespace-nowrap flex items-center gap-2">
                     <MapPin className="h-4 w-4" /> Auto Detect
                   </button>
                 </div>
               </div>
+              
+              <div className="h-64 rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 z-0 relative">
+                <MapContainer center={position || [12.9716, 77.5946]} zoom={13} style={{ height: '100%', width: '100%', zIndex: 0 }}>
+                  <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+                  <LocationMarker position={position} setPosition={setPosition} />
+                </MapContainer>
+              </div>
+              <p className="text-xs text-gray-500 text-center">Click on the map to manually set your location.</p>
             </div>
           </div>
 

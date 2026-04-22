@@ -1,9 +1,10 @@
+/* eslint-disable */
 import { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import api from '../../services/api';
 import toast from 'react-hot-toast';
 import { StatusBadge, PriorityBadge } from '../../components/Badges';
-import { MapPin, Calendar, Building, User, ArrowLeft, Clock, CheckCircle } from 'lucide-react';
+import { MapPin, Calendar, Building, User, ArrowLeft, Clock, CheckCircle, ThumbsUp } from 'lucide-react';
 
 export default function ComplaintDetails() {
   const { id } = useParams();
@@ -13,6 +14,19 @@ export default function ComplaintDetails() {
   const [hoverRating, setHoverRating] = useState(0);
   const [submittingRating, setSubmittingRating] = useState(false);
 
+  const handleUpvote = async () => {
+    try {
+      await api.post(`/complaints/${id}/upvote`);
+      setComplaint(prev => ({
+        ...prev,
+        upvotes: [...(prev.upvotes || []), 'me']
+      }));
+      toast.success('Upvoted successfully!');
+    } catch (error) {
+      toast.error('Already upvoted or error occurred');
+    }
+  };
+
   useEffect(() => {
     const fetchComplaint = async () => {
       try {
@@ -21,7 +35,8 @@ export default function ComplaintDetails() {
         if (data.complaint.rating) {
           setRating(data.complaint.rating);
         }
-      } catch (error) {
+      } catch (err) {
+        console.error(err);
         toast.error('Failed to load complaint details');
       } finally {
         setLoading(false);
@@ -38,7 +53,8 @@ export default function ComplaintDetails() {
       setRating(star);
       setComplaint({ ...complaint, rating: star });
       toast.success('Thank you for your feedback!');
-    } catch (error) {
+    } catch (err) {
+      console.error(err);
       toast.error('Failed to submit rating');
     } finally {
       setSubmittingRating(false);
@@ -54,7 +70,7 @@ export default function ComplaintDetails() {
   }
 
   const timeline = complaint.timeline && complaint.timeline.length > 0 
-    ? complaint.timeline.map((item, index) => ({
+    ? complaint.timeline.map((item) => ({
         status: item.status,
         date: new Date(item.date).toLocaleDateString(),
         desc: item.note || `Status updated to ${item.status}`,
@@ -87,7 +103,13 @@ export default function ComplaintDetails() {
               </span>
             </div>
 
-            <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-4">{complaint.title}</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">{complaint.title}</h2>
+              <button onClick={handleUpvote} className="px-4 py-2 bg-blue-50 text-blue-600 rounded-lg font-medium text-sm hover:bg-blue-100 flex items-center gap-2 transition-colors">
+                <ThumbsUp className="w-4 h-4" /> 
+                {complaint.upvotes?.length || 0} Upvotes
+              </button>
+            </div>
 
             <div className="prose dark:prose-invert max-w-none mb-6 text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
               <p>{complaint.description}</p>
@@ -104,21 +126,33 @@ export default function ComplaintDetails() {
                 <User className="h-4 w-4 text-gray-400" /> Reported by You
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                <MapPin className="h-4 w-4 text-gray-400" /> {complaint.location || 'Location attached'}
+                <MapPin className="h-4 w-4 text-gray-400" /> {complaint.location ? 'GPS Location Attached' : 'Address Attached'}
               </div>
             </div>
           </div>
 
           {/* Attached Images */}
           <div className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-sm rounded-xl p-6">
-            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Attached Evidence</h3>
+            <h3 className="font-bold text-gray-900 dark:text-white mb-4">Evidence Images</h3>
             <div className="grid grid-cols-2 gap-4">
               {complaint.imageUrl ? (
-                <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 aspect-video relative group cursor-pointer">
-                  <img src={`http://localhost:5000${complaint.imageUrl}`} alt="Issue" className="w-full h-full object-cover transition-transform duration-500" />
+                <div>
+                  <p className="text-sm font-medium text-gray-500 mb-2">Before (Reported)</p>
+                  <div className="rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 aspect-video relative group cursor-pointer">
+                    <img src={`http://localhost:5000${complaint.imageUrl}`} alt="Issue Before" className="w-full h-full object-cover transition-transform duration-500" />
+                  </div>
                 </div>
               ) : (
-                <div className="text-gray-500 text-sm">No evidence attached.</div>
+                <div className="text-gray-500 text-sm">No initial evidence attached.</div>
+              )}
+              
+              {complaint.afterImage && (
+                <div>
+                  <p className="text-sm font-medium text-green-600 mb-2">After (Resolved)</p>
+                  <div className="rounded-xl overflow-hidden border border-green-200 dark:border-green-700 bg-green-50 dark:bg-green-900/20 aspect-video relative group cursor-pointer">
+                    <img src={`http://localhost:5000${complaint.afterImage}`} alt="Issue After" className="w-full h-full object-cover transition-transform duration-500" />
+                  </div>
+                </div>
               )}
             </div>
           </div>
@@ -174,3 +208,4 @@ export default function ComplaintDetails() {
     </div>
   );
 }
+

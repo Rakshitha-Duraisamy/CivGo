@@ -25,7 +25,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 exports.register = async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, phone, role } = req.body;
 
     // Check if user exists
     const userExists = await User.findOne({ email });
@@ -42,10 +42,45 @@ exports.register = async (req, res) => {
       name,
       email,
       password: hashedPassword,
-      role: email.includes('admin') ? 'admin' : 'citizen' // simple demo logic
+      phone,
+      role: role || (email.includes('admin') ? 'department_admin' : 'citizen')
     });
 
     sendTokenResponse(user, 201, res);
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+// Mock OTP functionality
+exports.sendOtp = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    if (!phone) return res.status(400).json({ success: false, message: 'Phone number required' });
+    
+    // In a real app, integrate Twilio/Firebase here.
+    console.log(`Mock OTP 123456 sent to ${phone}`);
+    res.status(200).json({ success: true, message: 'OTP sent successfully (use 123456)' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Server error' });
+  }
+};
+
+exports.verifyOtp = async (req, res) => {
+  try {
+    const { phone, otp } = req.body;
+    if (!phone || !otp) return res.status(400).json({ success: false, message: 'Phone and OTP required' });
+    
+    if (otp !== '123456') {
+      return res.status(400).json({ success: false, message: 'Invalid OTP' });
+    }
+
+    let user = await User.findOne({ phone });
+    if (!user) {
+      return res.status(404).json({ success: false, message: 'No user found with this phone. Please register.' });
+    }
+
+    sendTokenResponse(user, 200, res);
   } catch (error) {
     res.status(500).json({ success: false, message: 'Server error' });
   }

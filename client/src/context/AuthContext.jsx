@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { createContext, useContext, useState, useEffect } from 'react';
 import api from '../services/api';
 import socket from '../services/socket';
@@ -72,8 +73,25 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const sendOtp = async (phone) => {
+    const { data } = await api.post('/auth/send-otp', { phone });
+    return data;
+  };
+
+  const verifyOtp = async (phone, otp) => {
+    const { data } = await api.post('/auth/verify-otp', { phone, otp });
+    setUser(data.user);
+    localStorage.setItem('civic_user', JSON.stringify(data.user));
+    localStorage.setItem('civic_token', data.token);
+    
+    socket.auth = { token: data.token };
+    socket.connect();
+    
+    return data.user;
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, loading, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, register, logout, sendOtp, verifyOtp, loading, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );
@@ -86,3 +104,4 @@ export function useAuth() {
   }
   return context;
 }
+

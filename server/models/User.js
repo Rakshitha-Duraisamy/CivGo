@@ -18,9 +18,18 @@ const userSchema = new mongoose.Schema({
     required: true,
     minlength: 6
   },
+  phone: {
+    type: String,
+    trim: true
+  },
+  language: {
+    type: String,
+    enum: ['en', 'ta', 'hi'],
+    default: 'en'
+  },
   role: {
     type: String,
-    enum: ['citizen', 'admin'],
+    enum: ['citizen', 'staff', 'department_admin', 'super_admin', 'admin'],
     default: 'citizen'
   }
 }, { timestamps: true });

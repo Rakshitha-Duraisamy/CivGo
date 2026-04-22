@@ -1,6 +1,5 @@
 import { useState } from 'react';
-import { User, Bell, Shield, Palette } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { User, Palette, Save, Bell, Shield, Map, HelpCircle, Phone, Loader2 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
 export default function Settings() {
@@ -42,13 +41,7 @@ export default function Settings() {
 
         {/* Content */}
         <div className="flex-1">
-          <motion.div
-            key={activeTab}
-            initial={{ opacity: 0, x: 10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.2 }}
-            className="glass-card p-6"
-          >
+          <div key={activeTab} className="glass-card p-6">
             {activeTab === 'profile' && (
               <div className="space-y-6">
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Personal Information</h2>
@@ -143,7 +136,7 @@ export default function Settings() {
                 </div>
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       </div>
     </div>

@@ -12,12 +12,14 @@ import Register from '../pages/auth/Register';
 
 // Pages - Public
 import Landing from '../pages/Landing';
+import PublicDashboard from '../pages/PublicDashboard';
 
 // Pages - Citizen
 import CitizenDashboard from '../pages/citizen/CitizenDashboard';
 import SubmitComplaint from '../pages/citizen/SubmitComplaint';
 import ComplaintHistory from '../pages/citizen/ComplaintHistory';
 import ComplaintDetails from '../pages/citizen/ComplaintDetails';
+import NearbyComplaints from '../pages/citizen/NearbyComplaints';
 
 // Pages - Admin
 import AdminDashboard from '../pages/admin/AdminDashboard';
@@ -46,7 +48,8 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<MainLayout><Landing /></MainLayout>} />
+      <Route path="/" element={<Landing />} />
+      <Route path="/public-dashboard" element={<MainLayout><PublicDashboard /></MainLayout>} />
       
       {/* Auth Routes */}
       <Route element={<AuthLayout />}>
@@ -60,6 +63,7 @@ export default function AppRoutes() {
         <Route path="/submit-complaint" element={<SubmitComplaint />} />
         <Route path="/history" element={<ComplaintHistory />} />
         <Route path="/complaint/:id" element={<ComplaintDetails />} />
+        <Route path="/nearby" element={<NearbyComplaints />} />
       </Route>
 
       {/* Admin Protected Routes */}
