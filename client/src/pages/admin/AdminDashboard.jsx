@@ -142,7 +142,7 @@ export default function AdminDashboard() {
   const exportToPDF = () => {
     try {
       const doc = new jsPDF();
-      doc.text('CivicConnect Admin Report', 14, 15);
+      doc.text('CivGo Admin Report', 14, 15);
       
       const tableColumn = ["Title", "Category", "Priority", "Status"];
       const tableRows = [];

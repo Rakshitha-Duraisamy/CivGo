@@ -21,7 +21,7 @@ export default function Landing() {
       setEmail('admin@civic.com');
       setPassword('admin123');
     } else {
-      setEmail('priya.mehta@civicconnect.in');
+      setEmail('priya.mehta@civgo.in');
       setPassword('password123');
     }
     toast.success('Demo credentials autofilled');
@@ -61,7 +61,7 @@ export default function Landing() {
               <Hexagon className="w-6 h-6 text-white" />
             </div>
             <div>
-              <div className="text-xl font-bold tracking-tight text-white leading-none mb-1">CivicConnect</div>
+              <div className="text-xl font-bold tracking-tight text-white leading-none mb-1">Civgo</div>
               <div className="text-xs text-blue-100/80 font-medium tracking-wide">Smart Citizen Services</div>
             </div>
           </div>
@@ -277,9 +277,9 @@ export default function Landing() {
                       <span className="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded uppercase tracking-wider">{role}</span>
                     </div>
                     <div className="text-sm font-medium text-slate-700 flex items-center gap-2">
-                      {role === 'admin' ? 'admin@civic.com' : 'priya.mehta@civicconnect.in'} 
+                      {role === 'admin' ? 'admin@civic.com' : 'priya.mehta@civgo.in'} 
                       <Copy className="w-3.5 h-3.5 text-slate-400 cursor-pointer hover:text-slate-600" onClick={() => {
-                        navigator.clipboard.writeText(role === 'admin' ? 'admin@civic.com' : 'priya.mehta@civicconnect.in');
+                        navigator.clipboard.writeText(role === 'admin' ? 'admin@civic.com' : 'priya.mehta@civgo.in');
                         toast.success('Email copied');
                       }}/>
                     </div>

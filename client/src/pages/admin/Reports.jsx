@@ -40,7 +40,7 @@ export default function Reports() {
     const data = await fetchAndFilterData();
     if (data && data.length > 0) {
       const doc = new jsPDF();
-      doc.text('CivicConnect Complaints Report', 14, 15);
+      doc.text('CivGo Complaints Report', 14, 15);
       doc.setFontSize(10);
       doc.text(`Date Range: ${startDate} to ${endDate} | Category: ${category}`, 14, 22);
 
