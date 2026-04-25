@@ -4,12 +4,13 @@ import { useAuth } from '../context/AuthContext';
 // Layouts
 import MainLayout from '../layouts/MainLayout';
 import AdminLayout from '../layouts/AdminLayout';
-// Auth pages are now handled directly on the Landing page
-// import Login from '../pages/auth/Login';
-// import Register from '../pages/auth/Register';
+import AuthLayout from '../layouts/AuthLayout';
+
+import Login from '../pages/auth/Login';
+import Register from '../pages/auth/Register';
 
 // Pages - Public
-import Landing from '../pages/Landing';
+// import Landing from '../pages/Landing';
 import PublicDashboard from '../pages/PublicDashboard';
 
 // Pages - Citizen
@@ -46,10 +47,12 @@ export default function AppRoutes() {
   return (
     <Routes>
       {/* Public Routes */}
-      <Route path="/" element={<Landing />} />
+      <Route element={<AuthLayout />}>
+        <Route path="/" element={<Login />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+      </Route>
       <Route path="/public-dashboard" element={<MainLayout><PublicDashboard /></MainLayout>} />
-      
-      {/* Auth Routes removed as they are part of Landing page now */}
 
       {/* Citizen Protected Routes */}
       <Route element={<ProtectedRoute allowedRoles={['citizen', 'admin']}><MainLayout /></ProtectedRoute>}>
